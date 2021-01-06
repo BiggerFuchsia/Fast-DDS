@@ -93,7 +93,8 @@
 #  if defined(unix) \
       || defined(__unix) \
       || defined(_XOPEN_SOURCE) \
-      || defined(_POSIX_SOURCE)
+      || defined(_POSIX_SOURCE) \
+      || defined(__FUCHSIA__)
 
    // generic unix platform:
 

@@ -1,0 +1,247 @@
+import("//build/package.gni")
+import("//src/sys/build/components.gni")
+
+config("config") {
+  cflags = [ "-Wno-missing-field-initializers" ]
+  cflags += [ "-Wno-conversion" ]
+  cflags += [ "-Wno-newline-eof" ]
+  cflags += [ "-Wno-unknown-pragmas" ]
+  cflags += [ "-Wno-sign-compare" ]
+
+  include_dirs = [
+    "./include",
+    "./build/include",
+    "./src/cpp",
+    "./thirdparty/nlohmann-json/",
+    "./thirdparty/boost/include",
+  ]
+
+  defines = [
+    "FASTDDS_FUCHSIA",
+  ]
+}
+
+group("Fast-DDS") {
+  deps = [
+    ":lib",
+  ]
+}
+
+shared_library("lib") {
+  output_name = "fastdds"
+
+  public_configs = [ ":config" ]
+
+  deps = [
+    "//third_party/memory",
+    "//third_party/asio",
+    "//third_party/Fast-CDR",
+    "//third_party/boringssl",
+    "//third_party/tinyxml2",
+  ]
+
+  sources = [
+    "src/cpp/fastdds/log/Log.cpp",
+    "src/cpp/fastdds/log/OStreamConsumer.cpp",
+    "src/cpp/fastdds/log/StdoutErrConsumer.cpp",
+    "src/cpp/fastdds/log/StdoutConsumer.cpp",
+    "src/cpp/fastdds/log/FileConsumer.cpp",
+
+    "src/cpp/rtps/common/Time_t.cpp",
+    "src/cpp/rtps/resources/ResourceEvent.cpp",
+    "src/cpp/rtps/resources/TimedEvent.cpp",
+    "src/cpp/rtps/resources/TimedEventImpl.cpp",
+    "src/cpp/rtps/resources/AsyncWriterThread.cpp",
+    "src/cpp/rtps/resources/AsyncInterestTree.cpp",
+    "src/cpp/rtps/writer/LivelinessManager.cpp",
+    "src/cpp/rtps/writer/RTPSWriter.cpp",
+    "src/cpp/rtps/writer/StatefulWriter.cpp",
+    "src/cpp/rtps/writer/ReaderProxy.cpp",
+    "src/cpp/rtps/writer/StatelessWriter.cpp",
+    "src/cpp/rtps/writer/ReaderLocator.cpp",
+    "src/cpp/rtps/history/CacheChangePool.cpp",
+    "src/cpp/rtps/history/History.cpp",
+    "src/cpp/rtps/history/WriterHistory.cpp",
+    "src/cpp/rtps/history/ReaderHistory.cpp",
+    "src/cpp/rtps/history/TopicPayloadPool.cpp",
+    "src/cpp/rtps/history/TopicPayloadPoolRegistry.cpp",
+    "src/cpp/rtps/reader/WriterProxy.cpp",
+    "src/cpp/rtps/reader/StatefulReader.cpp",
+    "src/cpp/rtps/reader/StatelessReader.cpp",
+    "src/cpp/rtps/reader/RTPSReader.cpp",
+    "src/cpp/rtps/messages/RTPSMessageCreator.cpp",
+    "src/cpp/rtps/messages/RTPSMessageGroup.cpp",
+    "src/cpp/rtps/messages/RTPSGapBuilder.cpp",
+    "src/cpp/rtps/messages/SendBuffersManager.cpp",
+    "src/cpp/rtps/messages/MessageReceiver.cpp",
+    "src/cpp/rtps/messages/submessages/AckNackMsg.hpp",
+    "src/cpp/rtps/messages/submessages/DataMsg.hpp",
+    "src/cpp/rtps/messages/submessages/GapMsg.hpp",
+    "src/cpp/rtps/messages/submessages/HeartbeatMsg.hpp",
+    "src/cpp/rtps/network/NetworkFactory.cpp",
+    "src/cpp/rtps/network/ReceiverResource.cpp",
+    "src/cpp/rtps/participant/RTPSParticipant.cpp",
+    "src/cpp/rtps/participant/RTPSParticipantImpl.cpp",
+    "src/cpp/rtps/RTPSDomain.cpp",
+
+    "src/cpp/fastrtps_deprecated/Domain.cpp",
+    "src/cpp/fastrtps_deprecated/participant/Participant.cpp",
+    "src/cpp/fastrtps_deprecated/participant/ParticipantImpl.cpp",
+    "src/cpp/fastrtps_deprecated/publisher/Publisher.cpp",
+    "src/cpp/fastrtps_deprecated/publisher/PublisherImpl.cpp",
+    "src/cpp/fastrtps_deprecated/publisher/PublisherHistory.cpp",
+    "src/cpp/fastrtps_deprecated/subscriber/Subscriber.cpp",
+    "src/cpp/fastrtps_deprecated/subscriber/SubscriberImpl.cpp",
+    "src/cpp/fastrtps_deprecated/subscriber/SubscriberHistory.cpp",
+
+    "src/cpp/fastdds/topic/Topic.cpp",
+    "src/cpp/fastdds/topic/TopicImpl.cpp",
+    "src/cpp/fastdds/topic/TypeSupport.cpp",
+    "src/cpp/fastdds/topic/qos/TopicQos.cpp",
+    "src/cpp/fastdds/publisher/DataWriter.cpp",
+    "src/cpp/fastdds/publisher/DataWriterImpl.cpp",
+    "src/cpp/fastdds/publisher/qos/DataWriterQos.cpp",
+    "src/cpp/fastdds/subscriber/qos/DataReaderQos.cpp",
+    "src/cpp/fastdds/publisher/PublisherImpl.cpp",
+    "src/cpp/fastdds/publisher/qos/PublisherQos.cpp",
+    "src/cpp/fastdds/publisher/Publisher.cpp",
+    "src/cpp/fastdds/subscriber/SubscriberImpl.cpp",
+    "src/cpp/fastdds/subscriber/qos/SubscriberQos.cpp",
+    "src/cpp/fastdds/subscriber/Subscriber.cpp",
+    "src/cpp/fastdds/subscriber/DataReader.cpp",
+    "src/cpp/fastdds/subscriber/DataReaderImpl.cpp",
+    "src/cpp/fastdds/domain/DomainParticipantFactory.cpp",
+    "src/cpp/fastdds/domain/DomainParticipantImpl.cpp",
+    "src/cpp/fastdds/domain/DomainParticipant.cpp",
+    "src/cpp/fastdds/domain/qos/DomainParticipantQos.cpp",
+    "src/cpp/fastdds/domain/qos/DomainParticipantFactoryQos.cpp",
+    "src/cpp/fastdds/builtin/typelookup/common/TypeLookupTypes.cpp",
+    "src/cpp/fastdds/builtin/common/RPCHeadersImpl.cpp",
+    "src/cpp/fastdds/builtin/typelookup/TypeLookupManager.cpp",
+    "src/cpp/fastdds/builtin/typelookup/TypeLookupRequestListener.cpp",
+    "src/cpp/fastdds/builtin/typelookup/TypeLookupReplyListener.cpp",
+    "src/cpp/rtps/transport/ChannelResource.cpp",
+    "src/cpp/rtps/transport/UDPChannelResource.cpp",
+    "src/cpp/rtps/transport/TCPChannelResource.cpp",
+    "src/cpp/rtps/transport/TCPChannelResourceBasic.cpp",
+    "src/cpp/rtps/transport/TCPAcceptor.cpp",
+    "src/cpp/rtps/transport/TCPAcceptorBasic.cpp",
+    "src/cpp/rtps/transport/UDPv4Transport.cpp",
+    "src/cpp/rtps/transport/TCPTransportInterface.cpp",
+    "src/cpp/rtps/transport/UDPTransportInterface.cpp",
+    "src/cpp/rtps/transport/shared_mem/SharedMemTransportDescriptor.cpp",
+    "src/cpp/rtps/transport/TCPv4Transport.cpp",
+    "src/cpp/rtps/transport/UDPv6Transport.cpp",
+    "src/cpp/rtps/transport/TCPv6Transport.cpp",
+    "src/cpp/rtps/transport/test_UDPv4Transport.cpp",
+    "src/cpp/rtps/transport/tcp/TCPControlMessage.cpp",
+    "src/cpp/rtps/transport/tcp/RTCPMessageManager.cpp",
+
+    "src/cpp/dynamic-types/AnnotationDescriptor.cpp",
+    "src/cpp/dynamic-types/AnnotationParameterValue.cpp",
+    "src/cpp/dynamic-types/DynamicData.cpp",
+    "src/cpp/dynamic-types/DynamicDataFactory.cpp",
+    "src/cpp/dynamic-types/DynamicType.cpp",
+    "src/cpp/dynamic-types/DynamicPubSubType.cpp",
+    "src/cpp/dynamic-types/DynamicTypePtr.cpp",
+    "src/cpp/dynamic-types/DynamicDataPtr.cpp",
+    "src/cpp/dynamic-types/DynamicTypeBuilder.cpp",
+    "src/cpp/dynamic-types/DynamicTypeBuilderPtr.cpp",
+    "src/cpp/dynamic-types/DynamicTypeBuilderFactory.cpp",
+    "src/cpp/dynamic-types/DynamicTypeMember.cpp",
+    "src/cpp/dynamic-types/MemberDescriptor.cpp",
+    "src/cpp/dynamic-types/TypeDescriptor.cpp",
+    "src/cpp/dynamic-types/TypeIdentifier.cpp",
+    "src/cpp/dynamic-types/TypeIdentifierTypes.cpp",
+    "src/cpp/dynamic-types/TypeObject.cpp",
+    "src/cpp/dynamic-types/TypeObjectHashId.cpp",
+    "src/cpp/dynamic-types/TypeObjectFactory.cpp",
+    "src/cpp/dynamic-types/TypeNamesGenerator.cpp",
+    "src/cpp/dynamic-types/TypesBase.cpp",
+    "src/cpp/dynamic-types/BuiltinAnnotationsTypeObject.cpp",
+    "src/cpp/dynamic-types/DynamicDataHelper.cpp",
+
+    "src/cpp/fastrtps_deprecated/attributes/TopicAttributes.cpp",
+    "src/cpp/fastdds/core/policy/ParameterList.cpp",
+    "src/cpp/fastdds/publisher/qos/WriterQos.cpp",
+    "src/cpp/fastdds/subscriber/qos/ReaderQos.cpp",
+    "src/cpp/rtps/builtin/BuiltinProtocols.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/DirectMessageSender.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/PDP.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/PDPSimple.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/PDPListener.cpp",
+    "src/cpp/rtps/builtin/discovery/endpoint/EDP.cpp",
+    "src/cpp/rtps/builtin/discovery/endpoint/EDPSimple.cpp",
+    "src/cpp/rtps/builtin/discovery/endpoint/EDPSimpleListeners.cpp",
+    "src/cpp/rtps/builtin/discovery/endpoint/EDPStatic.cpp",
+    "src/cpp/rtps/builtin/liveliness/WLP.cpp",
+    "src/cpp/rtps/builtin/liveliness/WLPListener.cpp",
+    "src/cpp/rtps/builtin/data/ParticipantProxyData.cpp",
+    "src/cpp/rtps/builtin/data/WriterProxyData.cpp",
+    "src/cpp/rtps/builtin/data/ReaderProxyData.cpp",
+    "src/cpp/rtps/flowcontrol/ThroughputController.cpp",
+    "src/cpp/rtps/flowcontrol/ThroughputControllerDescriptor.cpp",
+    "src/cpp/rtps/flowcontrol/FlowController.cpp",
+    "src/cpp/rtps/exceptions/Exception.cpp",
+    "src/cpp/rtps/attributes/PropertyPolicy.cpp",
+    "src/cpp/rtps/common/Token.cpp",
+    "src/cpp/rtps/xmlparser/XMLParserCommon.cpp",
+    "src/cpp/rtps/xmlparser/XMLElementParser.cpp",
+    "src/cpp/rtps/xmlparser/XMLDynamicParser.cpp",
+    "src/cpp/rtps/xmlparser/XMLEndpointParser.cpp",
+    "src/cpp/rtps/xmlparser/XMLParser.cpp",
+    "src/cpp/rtps/xmlparser/XMLProfileManager.cpp",
+    "src/cpp/rtps/writer/PersistentWriter.cpp",
+    "src/cpp/rtps/writer/StatelessPersistentWriter.cpp",
+    "src/cpp/rtps/writer/StatefulPersistentWriter.cpp",
+    "src/cpp/rtps/reader/StatelessPersistentReader.cpp",
+    "src/cpp/rtps/reader/StatefulPersistentReader.cpp",
+    "src/cpp/rtps/persistence/PersistenceFactory.cpp",
+
+    "src/cpp/rtps/builtin/discovery/database/backup/SharedBackupFunctions.cpp",
+    "src/cpp/rtps/builtin/discovery/endpoint/EDPClient.cpp",
+    "src/cpp/rtps/builtin/discovery/endpoint/EDPServer.cpp",
+    "src/cpp/rtps/builtin/discovery/endpoint/EDPServerListeners.cpp",
+    "src/cpp/rtps/builtin/discovery/database/DiscoveryDataBase.cpp",
+    "src/cpp/rtps/builtin/discovery/database/DiscoveryParticipantInfo.cpp",
+    "src/cpp/rtps/builtin/discovery/database/DiscoveryParticipantsAckStatus.cpp",
+    "src/cpp/rtps/builtin/discovery/database/DiscoverySharedInfo.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/PDPClient.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/PDPServer.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/PDPServerListener.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/timedevent/DSClientEvent.cpp",
+    "src/cpp/rtps/builtin/discovery/participant/timedevent/DServerEvent.cpp",
+
+    "src/cpp/utils/IPFinder.cpp",
+    "src/cpp/utils/md5.cpp",
+    "src/cpp/utils/StringMatching.cpp",
+    "src/cpp/utils/IPLocator.cpp",
+    "src/cpp/utils/System.cpp",
+    "src/cpp/utils/TimedConditionVariable.cpp",
+    "src/cpp/utils/string_convert.cpp",
+
+    "src/cpp/dds/core/types.cpp",
+    "src/cpp/dds/core/Exception.cpp",
+    "src/cpp/dds/domain/DomainParticipant.cpp",
+    "src/cpp/dds/pub/Publisher.cpp",
+    "src/cpp/dds/pub/AnyDataWriter.cpp",
+    "src/cpp/dds/pub/DataWriter.cpp",
+    "src/cpp/dds/sub/Subscriber.cpp",
+    "src/cpp/dds/sub/DataReader.cpp",
+    "src/cpp/dds/topic/Topic.cpp",
+
+    # SHM Transport
+    "src/cpp/rtps/transport/shared_mem/test_SharedMemTransport.cpp",
+    "src/cpp/rtps/transport/shared_mem/SharedMemTransport.cpp",
+    # TLS support
+    "src/cpp/rtps/transport/TCPChannelResourceSecure.cpp",
+    "src/cpp/rtps/transport/TCPAcceptorSecure.cpp",
+  ]
+
+  configs += [ "//build/config:no_rtti" ]
+  configs -= [ "//build/config:no_rtti" ]
+  configs += [ "//build/config:no_exceptions" ]
+  configs -= [ "//build/config:no_exceptions" ]
+
+  configs += [ ":config" ]
+}

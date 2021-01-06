@@ -55,6 +55,8 @@
          //https://opensource.apple.com/source/libpthread/libpthread-301.30.1/src/pthread_cond.c.auto.html
          //in method pthread_cond_wait
          #define BOOST_INTERPROCESS_BUGGY_POSIX_PROCESS_SHARED
+      #elif defined(__FUCHSIA__)
+         #define BOOST_INTERPROCESS_BUGGY_POSIX_PROCESS_SHARED
       #endif
 
       //If buggy _POSIX_THREAD_PROCESS_SHARED is detected avoid using it
