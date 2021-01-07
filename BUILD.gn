@@ -25,9 +25,11 @@ group("Fast-DDS") {
   deps = [
     ":lib",
   ]
+
+  public_configs = [ ":config" ]
 }
 
-shared_library("lib") {
+static_library("lib") {
   output_name = "fastdds"
 
   public_configs = [ ":config" ]
